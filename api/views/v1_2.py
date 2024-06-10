@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from anthias_app.models import Asset
 from api.helpers import prepare_asset_v1_2, update_asset
 from api.serializers import AssetSerializer, AssetRequestSerializer
 from lib import assets_helper, db
@@ -15,18 +16,11 @@ from settings import settings
 class AssetListViewV1_2(APIView):
     serializer_class = AssetSerializer
 
-    @extend_schema(
-        summary='List assets',
-        responses={
-            200: AssetSerializer(many=True)
-        }
-    )
+    @extend_schema(summary='List assets')
     @authorized
     def get(self, request):
-        with db.conn(settings['database']) as conn:
-            result = assets_helper.read(conn)
-            serializer = self.serializer_class(result, many=True)
-            return Response(serializer.data)
+        serializer = self.serializer_class(Asset.objects.all(), many=True)
+        return Response(serializer.data)
 
     @extend_schema(
         summary='Create asset',
@@ -43,16 +37,26 @@ class AssetListViewV1_2(APIView):
             raise Exception("Could not retrieve file. Check the asset URL.")
         with db.conn(settings['database']) as conn:
             assets = assets_helper.read(conn)
-            ids_of_active_assets = [x['asset_id'] for x in assets if x['is_active']]
 
-            asset = assets_helper.create(conn, asset)
+            ids_of_active_assets = [
+                asset.asset_id for asset in Asset.objects.all()
+                if asset.is_active
+            ]
 
-            if asset['is_active']:
-                ids_of_active_assets.insert(asset['play_order'], asset['asset_id'])
-            assets_helper.save_ordering(conn, ids_of_active_assets)
+            Asset.objects.create(**asset)
 
-            result = assets_helper.read(conn, asset['asset_id'])
-            return Response(result, status=status.HTTP_201_CREATED)
+            # @TODO: Uncomment once fixed.
+            # if asset['is_active']:
+            #     ids_of_active_assets.insert(asset['play_order'], asset['asset_id'])
+            # assets_helper.save_ordering(conn, ids_of_active_assets)
+
+            # result = assets_helper.read(conn, asset['asset_id'])
+            # return Response(result, status=status.HTTP_201_CREATED)
+
+            # @TODO: Remove this when the above code is uncommented.
+            return Response({
+                'message': 'Change is in progress.'
+            })
 
 
 class AssetViewV1_2(APIView):

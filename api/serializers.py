@@ -3,8 +3,11 @@ from rest_framework.serializers import (
     CharField,
     DateTimeField,
     IntegerField,
+    ModelSerializer,
     Serializer,
+    SerializerMethodField,
 )
+from anthias_app.models import Asset
 
 
 class AssetRequestSerializer(Serializer):
@@ -19,7 +22,24 @@ class AssetRequestSerializer(Serializer):
     play_order = IntegerField()
     skip_asset_check = IntegerField(min_value=0, max_value=1)
 
-class AssetSerializer(AssetRequestSerializer):
-    asset_id = CharField()
-    is_active = IntegerField(min_value=0, max_value=1)
-    is_processing = IntegerField(min_value=0, max_value=1)
+
+class AssetSerializer(ModelSerializer):
+    is_active = SerializerMethodField()
+
+    class Meta:
+        model = Asset
+        fields = [
+            'asset_id',
+            'name',
+            'uri',
+            'start_date',
+            'end_date',
+            'duration',
+            'mimetype',
+            'is_active',
+            'is_enabled',
+            'is_processing',
+            'nocache',
+            'play_order',
+            'skip_asset_check',
+        ]
