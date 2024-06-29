@@ -10,7 +10,7 @@ export VIEWER_MEMORY_LIMIT_KB=$(echo "$TOTAL_MEMORY_KB" \* 0.8 | bc)
 export SHM_SIZE_KB="$(echo "$TOTAL_MEMORY_KB" \* 0.3 | bc | cut -d'.' -f1)"
 
 # Hard code this to latest for now.
-export DOCKER_TAG="ea9c9e7"
+export DOCKER_TAG="ba8fee7"
 
 # Detect Raspberry Pi version
 if grep -qF "Raspberry Pi 4" /proc/device-tree/model; then
