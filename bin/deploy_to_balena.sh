@@ -73,7 +73,7 @@ if [[ -z "${FLEET+x}" ]]; then
     exit 1
 fi
 
-export GIT_SHORT_HASH=${GIT_SHORT_HASH:-latest}
+export GIT_SHORT_HASH="e3e6e31"
 export DEFAULT_SHM_SIZE='256mb'
 
 if [[ -z "${SHM_SIZE+x}" ]]; then
