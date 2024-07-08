@@ -181,8 +181,10 @@ fi
 # Remove me later. Cryptography 38.0.3 won't build at the moment.
 # See https://github.com/screenly/anthias/issues/1654
 sudo pip install cryptography==38.0.2
-
 sudo pip install "$ANSIBLE_VERSION"
+
+export REPOSITORY='https://github.com/Screenly/Anthias.git'
+export BRANCH='48e427b'
 
 sudo -u ${USER} ansible localhost \
     -m git \

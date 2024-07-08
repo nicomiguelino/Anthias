@@ -9,7 +9,7 @@ TOTAL_MEMORY_KB=$(grep MemTotal /proc/meminfo | awk {'print $2'})
 export VIEWER_MEMORY_LIMIT_KB=$(echo "$TOTAL_MEMORY_KB" \* 0.8 | bc)
 
 # Hard code this to latest for now.
-export DOCKER_TAG="latest"
+export DOCKER_TAG="48e427b"
 
 # Detect Raspberry Pi version
 if grep -qF "Raspberry Pi 4" /proc/device-tree/model; then
