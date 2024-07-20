@@ -1,0 +1,17 @@
+name: Run Balena CLI commands
+on:
+  push:
+    branches:
+      - "test-fix-1661"
+jobs:
+  run-command:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: balena-io-examples/community-cli-action@1.0.0
+        with:
+          balena_token: ${{ secrets.BALENA_TOKEN }}
+          balena_cli_version: 18.2.2
+          balena_cli_commands: >
+            whoami;
+            envs --fleet gh_nicomiguelino/anthias-pi3 --config;
+            env add BALENA_HOST_CONFIG_disable_overscan 1 --fleet gh_nicomiguelino/anthias-pi3;
