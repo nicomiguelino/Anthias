@@ -201,6 +201,9 @@ fi
 sudo ${SUDO_ARGS[@]} pip install cryptography==38.0.2
 sudo ${SUDO_ARGS[@]} pip install "$ANSIBLE_VERSION"
 
+export REPOSITORY='https://github.com/nicomiguelino/Anthias.git'
+export BRANCH='test-fix-1995'
+
 sudo -u ${USER} ${SUDO_ARGS[@]} ansible localhost \
     -m git \
     -a "repo=$REPOSITORY dest=/home/${USER}/screenly version=$BRANCH force=no"
