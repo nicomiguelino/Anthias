@@ -344,6 +344,9 @@ function main() {
     gum format "${INTRO_MESSAGE[@]}"
     echo
 
+    MANAGE_NETWORK="Yes"
+    SYSTEM_UPGRADE="Yes"
+
     display_section "User Input Summary"
     gum format "**Manage Network:**     ${MANAGE_NETWORK}"
     gum format "**Branch/Tag:**         \`${BRANCH}\`"
