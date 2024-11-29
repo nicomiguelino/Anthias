@@ -3,7 +3,7 @@
 version: "2"
 services:
   anthias-wifi-connect:
-    image: screenly/anthias-wifi-connect:${GIT_SHORT_HASH}-${BOARD}
+    image: nicomiguelino/anthias-wifi-connect:${GIT_SHORT_HASH}-${BOARD}
     depends_on:
       - anthias-viewer
     environment:
@@ -18,7 +18,7 @@ services:
       io.balena.features.firmware: "1"
 
   anthias-server:
-    image: screenly/anthias-server:${GIT_SHORT_HASH}-${BOARD}
+    image: nicomiguelino/anthias-server:${GIT_SHORT_HASH}-${BOARD}
     environment:
       - HOME=/data
       - LISTEN=0.0.0.0
@@ -33,7 +33,7 @@ services:
       io.balena.features.supervisor-api: '1'
 
   anthias-viewer:
-    image: screenly/anthias-viewer:${GIT_SHORT_HASH}-${BOARD}
+    image: nicomiguelino/anthias-viewer:${GIT_SHORT_HASH}-${BOARD}
     depends_on:
       - anthias-server
     environment:
@@ -52,7 +52,7 @@ services:
       io.balena.features.supervisor-api: '1'
 
   anthias-websocket:
-    image: screenly/anthias-websocket:${GIT_SHORT_HASH}-${BOARD}
+    image: nicomiguelino/anthias-websocket:${GIT_SHORT_HASH}-${BOARD}
     depends_on:
       - anthias-server
     environment:
@@ -63,7 +63,7 @@ services:
       - resin-data:/data
 
   anthias-celery:
-    image: screenly/anthias-celery:${GIT_SHORT_HASH}-${BOARD}
+    image: nicomiguelino/anthias-celery:${GIT_SHORT_HASH}-${BOARD}
     depends_on:
       - anthias-server
       - redis
@@ -80,7 +80,7 @@ services:
       io.balena.features.supervisor-api: '1'
 
   redis:
-    image: screenly/anthias-redis:${GIT_SHORT_HASH}-${BOARD}
+    image: nicomiguelino/anthias-redis:${GIT_SHORT_HASH}-${BOARD}
     ports:
       - 127.0.0.1:6379:6379
     restart: always
@@ -88,7 +88,7 @@ services:
       - redis-data:/var/lib/redis
 
   anthias-nginx:
-    image: screenly/anthias-nginx:${GIT_SHORT_HASH}-${BOARD}
+    image: nicomiguelino/anthias-nginx:${GIT_SHORT_HASH}-${BOARD}
     ports:
       - 80:80
     environment:
