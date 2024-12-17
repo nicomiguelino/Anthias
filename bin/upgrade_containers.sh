@@ -25,7 +25,7 @@ fi
 if [ ! -f /proc/device-tree/model ] && [ "$(uname -m)" = "x86_64" ]; then
     export DEVICE_TYPE="x86"
 elif grep -qF "Raspberry Pi 5" /proc/device-tree/model; then
-    export DEVICE_TYPE="pi5"
+    export DEVICE_TYPE="pi4" # TODO: Change to `pi5` later
 elif grep -qF "Raspberry Pi 4" /proc/device-tree/model; then
     export DEVICE_TYPE="pi4"
 elif grep -qF "Raspberry Pi 3" /proc/device-tree/model; then
@@ -53,14 +53,9 @@ cat /home/${USER}/screenly/docker-compose.yml.tmpl \
     | envsubst \
     > /home/${USER}/screenly/docker-compose.yml
 
-if [ "$DEVICE_TYPE" = "x86" ] || [ "$DEVICE_TYPE" = "pi5" ]; then
+if [ "$DEVICE_TYPE" = "x86" ] || grep -qF "Raspberry Pi 5" /proc/device-tree/model; then
     sed -i '/devices:/ {N; /\n.*\/dev\/vchiq:\/dev\/vchiq/d}' \
         /home/${USER}/screenly/docker-compose.yml
-fi
-
-# TODO: Remove this workaround when ready.
-if [ "$DEVICE_TYPE" = "pi5" ]; then
-    export DEVICE_TYPE="pi4"
 fi
 
 sudo -E docker compose \
