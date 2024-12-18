@@ -12,6 +12,7 @@ on:
       - '!.github/workflows/build-webview.yaml'
       - '!.github/workflows/build-balena-disk-image.yaml'
       - '!.github/workflows/python-lint.yaml'
+      - '!.github/pull_request_template.md'
       - '!README.md'
       - '!docs/**'
       - '!bin/install.sh'
@@ -28,7 +29,7 @@ jobs:
     needs: run-tests
     strategy:
       matrix:
-        board: ['pi1', 'pi2', 'pi3', 'pi4', 'x86']
+        board: ['pi1', 'pi2', 'pi3', 'pi4', 'pi5', x86']
         python-version: ["3.11"]
     runs-on: ubuntu-latest
 
