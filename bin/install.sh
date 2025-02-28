@@ -5,7 +5,7 @@
 
 set -euo pipefail
 
-BRANCH="test-overhaul-pi4-64-installation"
+BRANCH="test-add-compute-module-support"
 ANSIBLE_PLAYBOOK_ARGS=()
 REPOSITORY="https://github.com/nicomiguelino/Anthias.git"
 ANTHIAS_REPO_DIR="/home/${USER}/screenly"
@@ -184,11 +184,11 @@ function install_ansible() {
 function set_device_type() {
     if [ ! -f /proc/device-tree/model ] && [ "$(uname -m)" = "x86_64" ]; then
         export DEVICE_TYPE="x86"
-    elif grep -qF "Raspberry Pi 5" /proc/device-tree/model; then
+    elif grep -qF "Raspberry Pi 5" /proc/device-tree/model || grep -qF "Compute Module 5" /proc/device-tree/model; then
         export DEVICE_TYPE="pi5"
-    elif grep -qF "Raspberry Pi 4" /proc/device-tree/model; then
+    elif grep -qF "Raspberry Pi 4" /proc/device-tree/model || grep -qF "Compute Module 4" /proc/device-tree/model; then
         export DEVICE_TYPE="pi4"
-    elif grep -qF "Raspberry Pi 3" /proc/device-tree/model; then
+    elif grep -qF "Raspberry Pi 3" /proc/device-tree/model || grep -qF "Compute Module 3" /proc/device-tree/model; then
         export DEVICE_TYPE="pi3"
     elif grep -qF "Raspberry Pi 2" /proc/device-tree/model; then
         export DEVICE_TYPE="pi2"
