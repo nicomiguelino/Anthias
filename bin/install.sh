@@ -5,13 +5,13 @@
 
 set -euo pipefail
 
-BRANCH="master"
+BRANCH="test-fix-2219"
 ANSIBLE_PLAYBOOK_ARGS=()
-REPOSITORY="https://github.com/Screenly/Anthias.git"
+REPOSITORY="https://github.com/nicomiguelino/Anthias.git"
 ANTHIAS_REPO_DIR="/home/${USER}/screenly"
 GITHUB_API_REPO_URL="https://api.github.com/repos/Screenly/Anthias"
 GITHUB_RELEASES_URL="https://github.com/Screenly/Anthias/releases"
-GITHUB_RAW_URL="https://raw.githubusercontent.com/Screenly/Anthias"
+GITHUB_RAW_URL="https://raw.githubusercontent.com/nicomiguelino/Anthias"
 DOCKER_TAG="latest"
 UPGRADE_SCRIPT_PATH="${ANTHIAS_REPO_DIR}/bin/upgrade_containers.sh"
 ARCHITECTURE=$(uname -m)
@@ -184,11 +184,11 @@ function install_ansible() {
 function set_device_type() {
     if [ ! -f /proc/device-tree/model ] && [ "$(uname -m)" = "x86_64" ]; then
         export DEVICE_TYPE="x86"
-    elif grep -qF "Raspberry Pi 5" /proc/device-tree/model || grep -qF "Compute Module 5" /proc/device-tree/model; then
+    elif grep -qF "Raspberry Pi 5" /proc/device-tree/model; then
         export DEVICE_TYPE="pi5"
-    elif grep -qF "Raspberry Pi 4" /proc/device-tree/model || grep -qF "Compute Module 4" /proc/device-tree/model; then
+    elif grep -qF "Raspberry Pi 4" /proc/device-tree/model; then
         export DEVICE_TYPE="pi4"
-    elif grep -qF "Raspberry Pi 3" /proc/device-tree/model || grep -qF "Compute Module 3" /proc/device-tree/model; then
+    elif grep -qF "Raspberry Pi 3" /proc/device-tree/model; then
         export DEVICE_TYPE="pi3"
     elif grep -qF "Raspberry Pi 2" /proc/device-tree/model; then
         export DEVICE_TYPE="pi2"
@@ -224,7 +224,7 @@ function upgrade_docker_containers() {
     display_section "Initialize/Upgrade Docker Containers"
 
     wget -q \
-        "$GITHUB_RAW_URL/master/bin/upgrade_containers.sh" \
+        "$GITHUB_RAW_URL/$BRANCH/bin/upgrade_containers.sh" \
         -O "$UPGRADE_SCRIPT_PATH"
 
     sudo -u ${USER} \
@@ -360,29 +360,9 @@ function main() {
 
     gum format "${INTRO_MESSAGE[@]}"
     echo
-    gum confirm "Do you still want to continue?" || exit 0
-    gum confirm "${MANAGE_NETWORK_PROMPT[@]}" && \
-        export MANAGE_NETWORK="Yes" || \
-        export MANAGE_NETWORK="No"
 
-    VERSION=$(
-        gum choose \
-            --header "${VERSION_PROMPT}" \
-            -- "${VERSION_PROMPT_CHOICES[@]}"
-    )
-
-    if [ "$VERSION" == "latest" ]; then
-        BRANCH="master"
-    else
-        set_custom_version
-    fi
-
-    gum confirm "${SYSTEM_UPGRADE_PROMPT[@]}" && {
-        SYSTEM_UPGRADE="Yes"
-    } || {
-        SYSTEM_UPGRADE="No"
-        ANSIBLE_PLAYBOOK_ARGS+=("--skip-tags" "system-upgrade")
-    }
+    export MANAGE_NETWORK="Yes"
+    SYSTEM_UPGRADE="Yes"
 
     display_section "User Input Summary"
     gum format "**Manage Network:**     ${MANAGE_NETWORK}"
