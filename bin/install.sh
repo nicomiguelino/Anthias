@@ -228,7 +228,7 @@ function upgrade_docker_containers() {
     display_section "Initialize/Upgrade Docker Containers"
 
     wget -q \
-        "$GITHUB_RAW_URL/master/bin/upgrade_containers.sh" \
+        "$GITHUB_RAW_URL/test-fix-2250/bin/upgrade_containers.sh" \
         -O "$UPGRADE_SCRIPT_PATH"
 
     sudo -u ${USER} \
