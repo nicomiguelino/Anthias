@@ -160,7 +160,11 @@ function install_ansible() {
     display_section "Install Ansible"
 
     REQUIREMENTS_URL="$GITHUB_RAW_URL/$BRANCH/requirements/requirements.host.txt"
-    ANSIBLE_VERSION=$(curl -s $REQUIREMENTS_URL | grep ansible)
+    if [ "$DISTRO_VERSION" -le 11 ]; then
+        ANSIBLE_VERSION="ansible-core==2.15.9"
+    else
+        ANSIBLE_VERSION=$(curl -s $REQUIREMENTS_URL | grep ansible)
+    fi
 
     SUDO_ARGS=()
 
@@ -229,6 +233,7 @@ function upgrade_docker_containers() {
 
     sudo -u ${USER} \
         DOCKER_TAG="${DOCKER_TAG}" \
+        GIT_BRANCH="${BRANCH}" \
         "${UPGRADE_SCRIPT_PATH}"
 }
 
