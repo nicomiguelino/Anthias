@@ -5,17 +5,16 @@
 
 set -euo pipefail
 
-BRANCH="master"
+BRANCH="test-fix-2051"
 ANSIBLE_PLAYBOOK_ARGS=()
-REPOSITORY="https://github.com/Screenly/Anthias.git"
+REPOSITORY="https://github.com/nicomiguelino/Anthias.git"
 ANTHIAS_REPO_DIR="/home/${USER}/screenly"
 GITHUB_API_REPO_URL="https://api.github.com/repos/Screenly/Anthias"
 GITHUB_RELEASES_URL="https://github.com/Screenly/Anthias/releases"
-GITHUB_RAW_URL="https://raw.githubusercontent.com/Screenly/Anthias"
+GITHUB_RAW_URL="https://raw.githubusercontent.com/nicomiguelino/Anthias"
 DOCKER_TAG="latest"
 UPGRADE_SCRIPT_PATH="${ANTHIAS_REPO_DIR}/bin/upgrade_containers.sh"
 ARCHITECTURE=$(uname -m)
-DISTRO_VERSION=$(lsb_release -rs)
 
 INTRO_MESSAGE=(
     "Anthias requires a dedicated Raspberry Pi and an SD card."
@@ -122,6 +121,7 @@ function initialize_locales() {
 function install_packages() {
     display_section "Install Packages via APT"
 
+    local DISTRO_VERSION=$(lsb_release -rs)
     local APT_INSTALL_ARGS=(
         "git"
         "libffi-dev"
@@ -160,11 +160,7 @@ function install_ansible() {
     display_section "Install Ansible"
 
     REQUIREMENTS_URL="$GITHUB_RAW_URL/$BRANCH/requirements/requirements.host.txt"
-    if [ "$DISTRO_VERSION" -le 11 ]; then
-        ANSIBLE_VERSION="ansible-core==2.15.9"
-    else
-        ANSIBLE_VERSION=$(curl -s $REQUIREMENTS_URL | grep ansible)
-    fi
+    ANSIBLE_VERSION=$(curl -s $REQUIREMENTS_URL | grep ansible)
 
     SUDO_ARGS=()
 
@@ -228,12 +224,11 @@ function upgrade_docker_containers() {
     display_section "Initialize/Upgrade Docker Containers"
 
     wget -q \
-        "$GITHUB_RAW_URL/master/bin/upgrade_containers.sh" \
+        "$GITHUB_RAW_URL/$BRANCH/bin/upgrade_containers.sh" \
         -O "$UPGRADE_SCRIPT_PATH"
 
     sudo -u ${USER} \
         DOCKER_TAG="${DOCKER_TAG}" \
-        GIT_BRANCH="${BRANCH}" \
         "${UPGRADE_SCRIPT_PATH}"
 }
 
@@ -365,29 +360,9 @@ function main() {
 
     gum format "${INTRO_MESSAGE[@]}"
     echo
-    gum confirm "Do you still want to continue?" || exit 0
-    gum confirm "${MANAGE_NETWORK_PROMPT[@]}" && \
-        export MANAGE_NETWORK="Yes" || \
-        export MANAGE_NETWORK="No"
 
-    VERSION=$(
-        gum choose \
-            --header "${VERSION_PROMPT}" \
-            -- "${VERSION_PROMPT_CHOICES[@]}"
-    )
-
-    if [ "$VERSION" == "latest" ]; then
-        BRANCH="master"
-    else
-        set_custom_version
-    fi
-
-    gum confirm "${SYSTEM_UPGRADE_PROMPT[@]}" && {
-        SYSTEM_UPGRADE="Yes"
-    } || {
-        SYSTEM_UPGRADE="No"
-        ANSIBLE_PLAYBOOK_ARGS+=("--skip-tags" "system-upgrade")
-    }
+    export MANAGE_NETWORK="Yes"
+    SYSTEM_UPGRADE="Yes"
 
     display_section "User Input Summary"
     gum format "**Manage Network:**     ${MANAGE_NETWORK}"
