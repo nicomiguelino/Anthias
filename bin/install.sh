@@ -1,4 +1,5 @@
 #!/bin/bash -e
+GIT_BRANCH="${BRANCH}" \
 
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 # -*- sh-basic-offset: 4 -*-
@@ -15,6 +16,7 @@ GITHUB_RAW_URL="https://raw.githubusercontent.com/nicomiguelino/Anthias"
 DOCKER_TAG="latest"
 UPGRADE_SCRIPT_PATH="${ANTHIAS_REPO_DIR}/bin/upgrade_containers.sh"
 ARCHITECTURE=$(uname -m)
+DISTRO_VERSION=$(lsb_release -rs)
 
 INTRO_MESSAGE=(
     "Anthias requires a dedicated Raspberry Pi and an SD card."
@@ -121,7 +123,6 @@ function initialize_locales() {
 function install_packages() {
     display_section "Install Packages via APT"
 
-    local DISTRO_VERSION=$(lsb_release -rs)
     local APT_INSTALL_ARGS=(
         "git"
         "libffi-dev"
