@@ -24,7 +24,7 @@ jobs:
   balena-build-images:
     strategy:
       matrix:
-        board: ['pi1', 'pi2', 'pi3', 'pi4', 'pi5']
+        board: ['pi1', 'pi2', 'pi3', 'pi4', 'pi5', 'x86']
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -46,6 +46,8 @@ jobs:
             echo "BALENA_IMAGE=raspberrypi4-64" >> "$GITHUB_ENV"
           elif [ "${{ matrix.board }}" == 'pi5' ]; then
             echo "BALENA_IMAGE=raspberrypi5" >> "$GITHUB_ENV"
+          elif [ "${{ matrix.board }}" == 'x86' ]; then
+            echo "BALENA_IMAGE=generic-amd64" >> "$GITHUB_ENV"
           fi
 
       - name: balena CLI Action - download
@@ -115,11 +117,11 @@ jobs:
         with:
           allowUpdates: true
           prerelease: true
-          artifacts: "*raspberry*.zip,*raspberry*.sha256,*raspberry*.json"
+          artifacts: "*raspberry*.zip,*raspberry*.sha256,*raspberry*.json,*generic-amd64.zip,*generic-amd64.sha256,*generic-amd64.json"
           tag: ${{ inputs.tag }}
           commit: ${{ inputs.commit }}
 
       - name: Attest
         uses: actions/attest-build-provenance@v1
         with:
-          subject-path: '${{ github.workspace }}/*raspberry*.zip'
+          subject-path: '${{ github.workspace }}/*raspberry*.zip,${{ github.workspace }}/*generic-amd64.zip'

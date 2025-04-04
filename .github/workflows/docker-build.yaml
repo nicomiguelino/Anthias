@@ -121,7 +121,7 @@ jobs:
     needs: buildx
     strategy:
       matrix:
-        board: ['pi1', 'pi2', 'pi3', 'pi4', 'pi5']
+        board: ['pi1', 'pi2', 'pi3', 'pi4', 'pi5', 'x86']
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -151,7 +151,7 @@ jobs:
           envsubst < docker-compose.balena.yml.tmpl > balena-deploy/docker-compose.yml
 
           # Remove bind mounts to `/dev/vchiq` for Raspberry Pi 5
-          if [ "${{ matrix.board }}" == "pi5" ]; then
+          if [ "${{ matrix.board }}" == "pi5" || "${{ matrix.board }}" == "x86" ]; then
             sed -i '/devices:/ {N; /\n.*\/dev\/vchiq:\/dev\/vchiq/d}' \
               balena-deploy/docker-compose.yml
           fi
