@@ -56,17 +56,30 @@ RUN curl "{{webview_base_url}}/qt{{qt_major_version}}-{{qt_version}}-{{debian_ve
     rm "qt{{qt_major_version}}-{{qt_version}}-{{debian_version}}-{{board}}.tar.gz"
 {% endif %}
 
-RUN curl "{{webview_base_url}}/webview-{{qt_version}}-{{debian_version}}-{{board}}-{{webview_git_hash}}.tar.gz" \
-        -sL -o "/tmp/webview-{{qt_version}}-{{debian_version}}-{{board}}-{{webview_git_hash}}.tar.gz" && \
-    curl "{{webview_base_url}}/webview-{{qt_version}}-{{debian_version}}-{{board}}-{{webview_git_hash}}.tar.gz.sha256" \
-        -sL -o "/tmp/webview-{{qt_version}}-{{debian_version}}-{{board}}-{{webview_git_hash}}.tar.gz.sha256" && \
-    cd /tmp && \
-    sha256sum -c "webview-{{qt_version}}-{{debian_version}}-{{board}}-{{webview_git_hash}}.tar.gz.sha256" && \
-    tar -xzf "/tmp/webview-{{qt_version}}-{{debian_version}}-{{board}}-{{webview_git_hash}}.tar.gz" -C /usr/local && \
-    rm "webview-{{qt_version}}-{{debian_version}}-{{board}}-{{webview_git_hash}}.tar.gz"
+# nico start - todo: uncomment when ready
+# RUN curl "{{webview_base_url}}/webview-{{qt_version}}-{{debian_version}}-{{board}}-{{webview_git_hash}}.tar.gz" \
+#         -sL -o "/tmp/webview-{{qt_version}}-{{debian_version}}-{{board}}-{{webview_git_hash}}.tar.gz" && \
+#     curl "{{webview_base_url}}/webview-{{qt_version}}-{{debian_version}}-{{board}}-{{webview_git_hash}}.tar.gz.sha256" \
+#         -sL -o "/tmp/webview-{{qt_version}}-{{debian_version}}-{{board}}-{{webview_git_hash}}.tar.gz.sha256" && \
+#     cd /tmp && \
+#     sha256sum -c "webview-{{qt_version}}-{{debian_version}}-{{board}}-{{webview_git_hash}}.tar.gz.sha256" && \
+#     tar -xzf "/tmp/webview-{{qt_version}}-{{debian_version}}-{{board}}-{{webview_git_hash}}.tar.gz" -C /usr/local && \
+#     rm "webview-{{qt_version}}-{{debian_version}}-{{board}}-{{webview_git_hash}}.tar.gz"
+# nico end
+
+# nico start - todo: remove after testing
+COPY webview/build/webview.tar.gz /tmp/webview.tar.gz
+RUN tar -xzf /tmp/webview.tar.gz -C /usr/local && \
+    rm /tmp/webview.tar.gz
+# nico end
 
 ENV QT_QPA_EGLFS_FORCE888=1
+{% if board == 'x86' %}
+ENV QT_QPA_PLATFORM=xcb
+ENV DISPLAY=:0
+{% else %}
 ENV QT_QPA_PLATFORM=linuxfb
+{% endif %}
 
 # Turn on debug logging for now
 #ENV QT_LOGGING_RULES=qt.qpa.*=true
