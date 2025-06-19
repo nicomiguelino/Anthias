@@ -18,6 +18,7 @@ public:
 
     void loadPage(const QString &uri);
     void loadImage(const QString &uri);
+    void setRotation(int degrees);  // New method to set rotation
 
 protected:
     void paintEvent(QPaintEvent* event) override;
@@ -32,4 +33,5 @@ private:
     QNetworkAccessManager* networkManager;
     QImage currentImage;
     QImage nextImage;
+    int rotation = 0;  // Rotation angle in degrees
 };

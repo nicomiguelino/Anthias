@@ -125,6 +125,11 @@ void View::loadImage(const QString &preUri)
     });
 }
 
+void View::setRotation(int degrees)
+{
+    rotation = degrees;
+}
+
 void View::paintEvent(QPaintEvent*)
 {
     QPainter painter(this);
@@ -132,23 +137,62 @@ void View::paintEvent(QPaintEvent*)
 
     if (!currentImage.isNull()) {
         qDebug() << "Painting image. Size:" << currentImage.size();
+
+        // Save the painter state
+        painter.save();
+
+        // Translate to center of widget
+        painter.translate(width() / 2, height() / 2);
+
+        // Rotate around center
+        painter.rotate(rotation);
+
+        // Calculate scaled size considering rotation
         QSize scaledSize = currentImage.size();
-        scaledSize.scale(size(), Qt::KeepAspectRatio);
-        QRect targetRect = QRect(QPoint(0, 0), size());
-        targetRect = QRect(
-            (width() - scaledSize.width()) / 2,
-            (height() - scaledSize.height()) / 2,
+        QSize targetSize;
+
+        if (rotation == 90 || rotation == 270) {
+            // For portrait mode, we need to fit the image within the rotated dimensions
+            // First, calculate how the image would fit in the rotated space
+            QSize rotatedWidgetSize(height(), width());
+            scaledSize.scale(rotatedWidgetSize, Qt::KeepAspectRatio);
+
+            // Ensure the scaled size doesn't exceed the widget dimensions
+            if (scaledSize.width() > height() || scaledSize.height() > width()) {
+                scaledSize.scale(height(), width(), Qt::KeepAspectRatio);
+            }
+        } else {
+            // For landscape mode, scale to fit within the widget dimensions
+            scaledSize.scale(width(), height(), Qt::KeepAspectRatio);
+        }
+
+        qDebug() << "Scaled size:" << scaledSize;
+
+        // Draw image centered at origin
+        QRect targetRect(
+            -scaledSize.width() / 2,
+            -scaledSize.height() / 2,
             scaledSize.width(),
             scaledSize.height()
         );
         painter.drawImage(targetRect, currentImage);
+
+        // Restore painter state
+        painter.restore();
     }
 }
 
 void View::resizeEvent(QResizeEvent* event)
 {
     QWidget::resizeEvent(event);
-    webView->setGeometry(rect());
+
+    // Update web view geometry with rotation
+    if (rotation == 90 || rotation == 270) {
+        // For 90/270 degree rotation, swap width and height
+        webView->setGeometry(0, 0, height(), width());
+    } else {
+        webView->setGeometry(rect());
+    }
 }
 
 void View::handleAuthRequest(QNetworkReply* reply, QAuthenticator* auth)
